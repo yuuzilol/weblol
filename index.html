@@ -2,7 +2,8 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <meta name="google-site-verification" content="<meta name="google-site-verification" content="fMc5jIDD6J7DN_mKi3coJAv9Vb_WDxYUO-iM_QP8iBo" />" />
+  <meta name="google-site-verification" content="fMc5jIDD6J7DN_mKi3coJAv9Vb_WDxYUO-iM_QP8iBo" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>★Yuuzi lol★</title>
 
   <!-- ファビコン -->
@@ -36,19 +37,14 @@
       top: 40%;
       left: 50%;
       transform: translate(-50%, -50%);
-      font-size: 64px;
+      font-size: clamp(32px, 8vw, 64px);
       font-weight: 900;
       background: linear-gradient(270deg, #ff00cc, #00ffff, #ffcc00, #ff00cc);
       background-size: 600% 600%;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       animation: flicker 0.1s infinite alternate, rainbow 5s linear infinite;
-      text-shadow:
-        0 0 10px #fff,
-        0 0 20px #0ff,
-        0 0 30px #0ff,
-        0 0 40px #0ff,
-        0 0 60px #0ff;
+      text-shadow: 0 0 10px #fff, 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff, 0 0 60px #0ff;
       z-index: 2;
       pointer-events: none;
       user-select: none;
@@ -71,7 +67,7 @@
       left: 50%;
       transform: translate(-50%, -50%);
       padding: 16px 32px;
-      font-size: 20px;
+      font-size: clamp(16px, 4vw, 20px);
       color: #0ff;
       background: transparent;
       border: 2px solid #0ff;
@@ -95,7 +91,7 @@
       bottom: 30px;
       left: 30px;
       padding: 12px 24px;
-      font-size: 16px;
+      font-size: clamp(12px, 3vw, 16px);
       color: #0ff;
       background: transparent;
       border: 2px solid #0ff;
@@ -114,21 +110,12 @@
 </head>
 <body>
 
-  <!-- パーティクル -->
   <canvas id="particle-canvas"></canvas>
-
-  <!-- ネオンテキスト -->
   <div class="neon-text" id="neonText">Yuuzi lol</div>
-
-  <!-- ページ遷移ボタン -->
   <a class="btn" href="https://yuuzi-game-com.jimdosite.com/" target="_blank" rel="noopener noreferrer">ここをクリック</a>
-
-  <!-- 音楽ボタン -->
   <button class="music-btn" id="musicToggle">🎵 音楽 ON</button>
+  <audio id="bgm" src="https://yuuzilol.github.io/music-test/maou_14_shining_star.mp3" loop></audio>
 
-  <!-- 音楽プレイヤー -->
-<audio id="bgm" src="https://yuuzilol.github.io/music-test/maou_14_shining_star.mp3" loop></audio>
-  
   <script>
     const canvas = document.getElementById('particle-canvas');
     const ctx = canvas.getContext('2d');
@@ -144,31 +131,29 @@
       canvas.height = height;
     });
 
-    let mouseX = width / 2;
-    let mouseY = height / 2;
+    let pointerX = width / 2;
+    let pointerY = height / 2;
     const neonText = document.getElementById('neonText');
 
-    window.addEventListener('mousemove', (e) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
+    function updatePointer(x, y){
+      pointerX = x;
+      pointerY = y;
+      const deltaX = x - width / 2;
+      const deltaY = y - height / 2;
+      neonText.style.transform = `translate(-50%, -50%) rotateX(${-deltaY/50}deg) rotateY(${deltaX/50}deg)`;
+    }
 
-      const centerX = width / 2;
-      const centerY = height / 2;
-      const deltaX = e.clientX - centerX;
-      const deltaY = e.clientY - centerY;
-
-      const rotateY = deltaX / 50;
-      const rotateX = -deltaY / 50;
-
-      neonText.style.transform = `translate(-50%, -50%) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+    window.addEventListener('mousemove', e => updatePointer(e.clientX, e.clientY));
+    window.addEventListener('touchmove', e => {
+      if(e.touches.length > 0){
+        updatePointer(e.touches[0].clientX, e.touches[0].clientY);
+      }
     });
 
     // パーティクル
     const particles = [];
     class Particle {
-      constructor() {
-        this.reset();
-      }
+      constructor() { this.reset(); }
       reset() {
         this.size = Math.random() * 2 + 1;
         this.orbitRadius = Math.random() * 80 + 20;
@@ -179,14 +164,14 @@
       }
       update() {
         this.angle += this.speed;
-        this.x = mouseX + Math.cos(this.angle) * this.orbitRadius;
-        this.y = mouseY + Math.sin(this.angle) * this.orbitRadius;
+        this.x = pointerX + Math.cos(this.angle) * this.orbitRadius;
+        this.y = pointerY + Math.sin(this.angle) * this.orbitRadius;
         this.alpha += this.alphaChange;
-        if (this.alpha <= 0.3 || this.alpha >= 0.9) this.alphaChange *= -1;
+        if(this.alpha <= 0.3 || this.alpha >= 0.9) this.alphaChange *= -1;
       }
-      draw(ctx) {
+      draw(ctx){
         ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
         ctx.fillStyle = `rgba(0,255,255,${this.alpha})`;
         ctx.shadowColor = 'rgba(0,255,255,0.9)';
         ctx.shadowBlur = 10;
@@ -194,39 +179,27 @@
       }
     }
 
-    for (let i = 0; i < 100; i++) {
-      particles.push(new Particle());
-    }
+    for(let i=0;i<50;i++){ particles.push(new Particle()); }
 
-    function animate() {
-      ctx.clearRect(0, 0, width, height);
-      for (let p of particles) {
-        p.update();
-        p.draw(ctx);
-      }
+    function animate(){
+      ctx.clearRect(0,0,width,height);
+      for(let p of particles){ p.update(); p.draw(ctx); }
       requestAnimationFrame(animate);
     }
-
     animate();
 
-    // 音楽再生ボタン
+    // 音楽ボタン
     const bgm = document.getElementById('bgm');
     const musicBtn = document.getElementById('musicToggle');
-
-    musicBtn.addEventListener('click', () => {
-      if (bgm.paused) {
-        bgm.play().then(() => {
-          musicBtn.textContent = '🎵 音楽 OFF';
-        }).catch(() => {
-          alert('再生できませんでした！もう一度クリックしてね。');
-        });
-      } else {
+    musicBtn.addEventListener('click', ()=>{
+      if(bgm.paused){
+        bgm.play().then(()=>{ musicBtn.textContent='🎵 音楽 OFF'; }).catch(()=>{ alert('再生できません！もう一度クリック'); });
+      }else{
         bgm.pause();
-        musicBtn.textContent = '🎵 音楽 ON';
+        musicBtn.textContent='🎵 音楽 ON';
       }
     });
   </script>
 </body>
 </html>
-
 
