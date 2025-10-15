@@ -1,219 +1,104 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="google-site-verification" content="fMc5jIDD6J7DN_mKi3coJAv9Vb_WDxYUO-iM_QP8iBo" />
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>★Yuuzi lol★</title>
-
-  <!-- ファビコン -->
-  <link rel="icon" href="https://i.imgur.com/akcbEQM.png" type="image/png" />
-
-  <!-- フォント -->
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet" />
-
-    <!-- Open Graphタグ -->
-  <meta property="og:title" content="★Yuuzi lol★">
-  <meta property="og:description" content="ぼくちんのつくったさいとだで">
-  <meta property="og:image" content="https://i.imgur.com/akcbEQM.png">
-  <meta property="og:url" content="https://example.com/">
-  <meta property="og:type" content="website">
-
-  <!-- Twitterカード用 -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="★Yuuzi lol★">
-  <meta name="twitter:description" content="ぼくちんのつくったさいとだで">
-  <meta name="twitter:image" content="https://i.imgur.com/akcbEQM.png">
-</head>
-
+  <title>Yuuzi</title>
   <style>
-    html, body {
+    body {
       margin: 0;
       padding: 0;
-      height: 100%;
+      background: linear-gradient(135deg, #f8f9fc, #d7e0ff);
       overflow: hidden;
-      background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1470&q=80') no-repeat center center / cover;
-      font-family: 'Orbitron', sans-serif;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: "Segoe UI", sans-serif;
     }
 
-    #particle-canvas {
-      position: fixed;
-      top: 0;
-      left: 0;
+    .hero {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .tilt-box {
       width: 100%;
       height: 100%;
+      position: relative;
+      perspective: 1000px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    .hero__logo img {
+      width: 300px;
+      filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3));
+      margin-bottom: 30px;
+      transition: transform 0.3s ease-out;
+    }
+
+    .hero__board img {
+      width: 800px;
+      max-width: 90vw;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+      transition: transform 0.3s ease-out;
+    }
+
+    .hero__particles {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
       pointer-events: none;
-      z-index: 1;
     }
 
-    .neon-text {
+    .particle {
       position: absolute;
-      top: 40%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: clamp(32px, 8vw, 64px);
-      font-weight: 900;
-      background: linear-gradient(270deg, #ff00cc, #00ffff, #ffcc00, #ff00cc);
-      background-size: 600% 600%;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: flicker 0.1s infinite alternate, rainbow 5s linear infinite;
-      text-shadow: 0 0 10px #fff, 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff, 0 0 60px #0ff;
-      z-index: 2;
-      pointer-events: none;
-      user-select: none;
-      transition: transform 0.1s ease-out;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      opacity: 0.6;
+      animation: float 6s infinite ease-in-out;
     }
 
-    @keyframes flicker {
-      0% { opacity: 0.85; }
-      100% { opacity: 1; }
-    }
+    .particle.--blue { background: #6ecbff; }
+    .particle.--pink { background: #ff6ea2; }
+    .particle.--white { background: white; }
 
-    @keyframes rainbow {
-      0% { background-position: 0% 50%; }
-      100% { background-position: 100% 50%; }
-    }
-
-    .btn {
-      position: absolute;
-      top: 60%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      padding: 16px 32px;
-      font-size: clamp(16px, 4vw, 20px);
-      color: #0ff;
-      background: transparent;
-      border: 2px solid #0ff;
-      border-radius: 8px;
-      text-transform: uppercase;
-      cursor: pointer;
-      z-index: 3;
-      box-shadow: 0 0 10px #0ff, 0 0 20px #0ff;
-      text-decoration: none;
-      transition: all 0.3s ease;
-    }
-
-    .btn:hover {
-      background: rgba(0, 255, 255, 0.1);
-      transform: translate(-50%, -50%) scale(1.1);
-      box-shadow: 0 0 20px #0ff, 0 0 40px #0ff;
-    }
-
-    .music-btn {
-      position: absolute;
-      bottom: 30px;
-      left: 30px;
-      padding: 12px 24px;
-      font-size: clamp(12px, 3vw, 16px);
-      color: #0ff;
-      background: transparent;
-      border: 2px solid #0ff;
-      border-radius: 8px;
-      cursor: pointer;
-      z-index: 10;
-      box-shadow: 0 0 10px #0ff, 0 0 20px #0ff;
-      transition: all 0.2s ease;
-    }
-
-    .music-btn:hover {
-      background: rgba(0, 255, 255, 0.1);
-      box-shadow: 0 0 20px #0ff, 0 0 40px #0ff;
+    @keyframes float {
+      0% { transform: translateY(0) scale(1); opacity: 0.8; }
+      50% { transform: translateY(-40px) scale(1.2); opacity: 1; }
+      100% { transform: translateY(0) scale(1); opacity: 0.8; }
     }
   </style>
 </head>
 <body>
+  <section class="hero">
+    <div class="tilt-box" data-tilt data-tilt-max="8" data-tilt-speed="400" data-tilt-full-page-listening>
+      <div class="hero__particles">
+        <div class="particle --blue" style="top:20%; left:10%; animation-delay:0s;"></div>
+        <div class="particle --pink" style="top:40%; left:80%; animation-delay:1s;"></div>
+        <div class="particle --white" style="top:60%; left:30%; animation-delay:2s;"></div>
+        <div class="particle --blue" style="top:70%; left:70%; animation-delay:3s;"></div>
+        <div class="particle --pink" style="top:10%; left:50%; animation-delay:4s;"></div>
+      </div>
 
-  <canvas id="particle-canvas"></canvas>
-  <div class="neon-text" id="neonText">Yuuzi lol</div>
-  <a class="btn" href="https://yuuzi-game-com.jimdosite.com/" target="_blank" rel="noopener noreferrer">ここをクリック</a>
-  <button class="music-btn" id="musicToggle">🎵 音楽 ON</button>
-  <audio id="bgm" src="https://yuuzilol.github.io/music-test/maou_14_shining_star.mp3" loop></audio>
+      <div class="hero__logo tilt-mid">
+        <img src="https://vspo.jp/wp-content/themes/s/assets/images/common/logo.svg" alt="ぶいすぽっ！ロゴ">
+      </div>
+      <div class="hero__board tilt-back">
+        <img src="https://vspo.jp/wp-content/themes/s/assets/images/top/hero_board.webp" alt="GAMING GIRLS ARE COOL&CUTE">
+      </div>
+    </div>
+  </section>
 
-  <script>
-    const canvas = document.getElementById('particle-canvas');
-    const ctx = canvas.getContext('2d');
-    let width = window.innerWidth;
-    let height = window.innerHeight;
-    canvas.width = width;
-    canvas.height = height;
-
-    window.addEventListener('resize', () => {
-      width = window.innerWidth;
-      height = window.innerHeight;
-      canvas.width = width;
-      canvas.height = height;
-    });
-
-    let pointerX = width / 2;
-    let pointerY = height / 2;
-    const neonText = document.getElementById('neonText');
-
-    function updatePointer(x, y){
-      pointerX = x;
-      pointerY = y;
-      const deltaX = x - width / 2;
-      const deltaY = y - height / 2;
-      neonText.style.transform = `translate(-50%, -50%) rotateX(${-deltaY/50}deg) rotateY(${deltaX/50}deg)`;
-    }
-
-    window.addEventListener('mousemove', e => updatePointer(e.clientX, e.clientY));
-    window.addEventListener('touchmove', e => {
-      if(e.touches.length > 0){
-        updatePointer(e.touches[0].clientX, e.touches[0].clientY);
-      }
-    });
-
-    // パーティクル
-    const particles = [];
-    class Particle {
-      constructor() { this.reset(); }
-      reset() {
-        this.size = Math.random() * 2 + 1;
-        this.orbitRadius = Math.random() * 80 + 20;
-        this.angle = Math.random() * Math.PI * 2;
-        this.speed = Math.random() * 0.02 + 0.005;
-        this.alpha = Math.random() * 0.5 + 0.3;
-        this.alphaChange = Math.random() * 0.02;
-      }
-      update() {
-        this.angle += this.speed;
-        this.x = pointerX + Math.cos(this.angle) * this.orbitRadius;
-        this.y = pointerY + Math.sin(this.angle) * this.orbitRadius;
-        this.alpha += this.alphaChange;
-        if(this.alpha <= 0.3 || this.alpha >= 0.9) this.alphaChange *= -1;
-      }
-      draw(ctx){
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
-        ctx.fillStyle = `rgba(0,255,255,${this.alpha})`;
-        ctx.shadowColor = 'rgba(0,255,255,0.9)';
-        ctx.shadowBlur = 10;
-        ctx.fill();
-      }
-    }
-
-    for(let i=0;i<50;i++){ particles.push(new Particle()); }
-
-    function animate(){
-      ctx.clearRect(0,0,width,height);
-      for(let p of particles){ p.update(); p.draw(ctx); }
-      requestAnimationFrame(animate);
-    }
-    animate();
-
-    // 音楽ボタン
-    const bgm = document.getElementById('bgm');
-    const musicBtn = document.getElementById('musicToggle');
-    musicBtn.addEventListener('click', ()=>{
-      if(bgm.paused){
-        bgm.play().then(()=>{ musicBtn.textContent='🎵 音楽 OFF'; }).catch(()=>{ alert('再生できません！もう一度クリック'); });
-      }else{
-        bgm.pause();
-        musicBtn.textContent='🎵 音楽 ON';
-      }
-    });
-  </script>
+  <!-- VanillaTilt.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
 </body>
 </html>
-
